@@ -19,6 +19,7 @@ class UserSeeder extends Seeder
             "name" => "piter",
             "password" => Hash::make("piter"),
             "level" => "user",
+            "token" => "test"
         ]);
     }
 }

@@ -78,5 +78,24 @@ class UserControllerTest extends TestCase
             ]);
     }
 
+    public function testCurrentSuccess(): void {
+        $this->seed([UserSeeder::class]);
+
+        $this->get("/api/users/current", headers:["API-Key" => "test"])
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    "id" => "123",
+                    "name" => "piter",
+                    "level" => "user"
+                ]
+            ]);
+    }
+
+    public function testCurrentInvalid(): void {
+        $this->get("/api/users/current")
+            ->assertStatus(401);
+    }
+
 
 }

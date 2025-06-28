@@ -8,5 +8,8 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post("/users/login", [UserController::class, "login"]);
+Route::post("/users/login", [UserController::class, "login"])->name("login");
 
+Route::middleware('auth:token')->group(function () {
+    Route::get('/users/current', [UserController::class, 'current']);
+});
