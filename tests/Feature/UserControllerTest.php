@@ -7,6 +7,7 @@ use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class UserControllerTest extends TestCase
@@ -100,11 +101,8 @@ class UserControllerTest extends TestCase
     public function testUpdateSuccess(): void {
         $this->seed([UserSeeder::class]);
 
-        $user = User::query()->where("id", "=" , "123")->first();
-
         $this->post("/api/users/update",
             data: [
-                "id" => $user->id,
                 "oldPassword" => "piter",
                 "newPassword" => "update",
                 "retypePassword" => "update"
@@ -119,4 +117,82 @@ class UserControllerTest extends TestCase
                 ]
             ]);
     }
+
+    public function testUpdateValidationError(): void {
+        $this->seed([UserSeeder::class]);
+
+        $this->post("/api/users/update",
+            data: [
+                "oldPassword" => "",
+                "newPassword" => "",
+                "retypePassword" => ""
+            ],
+            headers: ["API-Key" => "test"])
+            ->assertStatus(400)
+            ->assertJson([
+                "errors" => [
+                    "oldPassword" => [
+                        "The old password field is required."
+                    ],
+                    "newPassword" => [
+                        "The new password field is required."
+                    ],
+                    "retypePassword" => [
+                        "The retype password field is required."
+                    ]
+                ]
+            ]);
+    }
+
+    public function testUpdateWrongOldPassword(): void {
+        $this->seed([UserSeeder::class]);
+
+        $this->post("/api/users/update",
+            data: [
+                "oldPassword" => "salah",
+                "newPassword" => "test",
+                "retypePassword" => "test"
+            ],
+            headers: ["API-Key" => "test"])
+            ->assertStatus(400)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "old password is wrong"
+                    ]
+                ]
+            ]);
+    }
+
+    public function testUpdateWrongRetypePassword(): void {
+        $this->seed([UserSeeder::class]);
+
+        $this->post("/api/users/update",
+            data: [
+                "oldPassword" => "piter",
+                "newPassword" => "test",
+                "retypePassword" => "salah"
+            ],
+            headers: ["API-Key" => "test"])
+            ->assertStatus(400)
+            ->assertJson([
+                "errors" => [
+                    "retypePassword" => [
+                        "The retype password field must match new password."
+                    ]
+                ]
+            ]);
+    }
+
+    public function testLogoutSuccess(): void {
+        $this->seed([UserSeeder::class]);
+
+        $this->get("/api/users/logout", headers: ["API-Key" => "test"])
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => true
+            ]);
+    }
+
+
 }

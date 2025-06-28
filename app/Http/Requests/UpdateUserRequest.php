@@ -24,7 +24,6 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id" => ["required", "max:20"],
             "oldPassword" => ["required", "max:100"],
             "newPassword" => ["required", "max:100"],
             "retypePassword" => ["required", "max:100", "same:newPassword"]

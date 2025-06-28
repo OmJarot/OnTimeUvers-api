@@ -8,6 +8,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -70,5 +71,16 @@ class UserController extends Controller
                 ]
             ], 400));
         }
+    }
+
+    public function logout(): JsonResponse {
+        $user = Auth::user();
+        $this->authorize("update", $user);
+        $user->token = null;
+        $user->save();
+        Session::invalidate();
+        return response()->json([
+            "data" => true
+        ])->setStatusCode(200);
     }
 }
