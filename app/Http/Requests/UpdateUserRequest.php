@@ -6,14 +6,14 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class LoginRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user() != null;
     }
 
     /**
@@ -25,7 +25,9 @@ class LoginRequest extends FormRequest
     {
         return [
             "id" => ["required", "max:20"],
-            "password" => ["required", "max:100"]
+            "oldPassword" => ["required", "max:100"],
+            "newPassword" => ["required", "max:100"],
+            "retypePassword" => ["required", "max:100", "same:newPassword"]
         ];
     }
 

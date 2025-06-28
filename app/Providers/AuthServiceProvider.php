@@ -2,14 +2,20 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use App\Policies\UserPolicy;
 use App\Providers\Guard\TokenGuard;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
+
+
+
     /**
      * Register services.
      */
@@ -28,5 +34,7 @@ class AuthServiceProvider extends ServiceProvider
             $app->refresh("request", $tokenGuard, "setRequest");
             return $tokenGuard;
         });
+
+        Gate::policy(User::class, UserPolicy::class);
     }
 }

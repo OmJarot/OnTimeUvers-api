@@ -97,5 +97,26 @@ class UserControllerTest extends TestCase
             ->assertStatus(401);
     }
 
+    public function testUpdateSuccess(): void {
+        $this->seed([UserSeeder::class]);
 
+        $user = User::query()->where("id", "=" , "123")->first();
+
+        $this->post("/api/users/update",
+            data: [
+                "id" => $user->id,
+                "oldPassword" => "piter",
+                "newPassword" => "update",
+                "retypePassword" => "update"
+            ],
+            headers: ["API-Key" => "test"])
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    "id" => "123",
+                    "name" => "piter",
+                    "level" => "user"
+                ]
+            ]);
+    }
 }
