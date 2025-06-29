@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Jurusan;
+use Database\Seeders\JurusanSearchSeeder;
 use Database\Seeders\JurusanSeeder;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -150,7 +151,56 @@ class JurusanControllerTest extends TestCase
 
         $this->delete("/api/jurusans/tpl 2023", headers: ["API-Key" => "test"])
             ->assertStatus(403);
+    }
 
+    public function testSearch(): void {
+        $this->seed([JurusanSearchSeeder::class]);
+
+        $response = $this->get("/api/jurusans", headers: ["API-Key" => "dba"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(10, count($response["data"]));
+        self::assertEquals(21, $response["meta"]["total"]);
+    }
+
+    public function testSearchByName(): void {
+        $this->seed([JurusanSearchSeeder::class]);
+
+        $response = $this->get("/api/jurusans?name=tpl", headers: ["API-Key" => "dba"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(10, count($response["data"]));
+        self::assertEquals(20, $response["meta"]["total"]);
+    }
+    public function testSearchByAngkatan(): void {
+        $this->seed([JurusanSearchSeeder::class]);
+
+        $response = $this->get("/api/jurusans?angkatan=2023", headers: ["API-Key" => "dba"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(10, count($response["data"]));
+        self::assertEquals(21, $response["meta"]["total"]);
+    }
+
+    public function testSearchNotFound(): void {
+        $this->seed([JurusanSearchSeeder::class]);
+
+        $response = $this->get("/api/jurusans?name=tidak", headers: ["API-Key" => "dba"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(0, count($response["data"]));
+        self::assertEquals(0, $response["meta"]["total"]);
+    }
+
+    public function testSearchForbidden(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $this->get("/api/jurusans", headers: ["API-Key" => "test"])
+            ->assertStatus(403);
     }
 
 

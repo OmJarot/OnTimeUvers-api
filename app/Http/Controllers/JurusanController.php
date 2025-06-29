@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CraeteJurusanRequest;
+use App\Http\Resources\JurusanCollection;
 use App\Http\Resources\JurusanResource;
 use App\Models\Jurusan;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
@@ -75,4 +77,24 @@ class JurusanController extends Controller
         return response()->json(["data" => true])->setStatusCode(200);
     }
 
+    function search(Request $request): JurusanCollection {
+        $this->authorize("viewAny", Jurusan::class);
+
+        $page = $request->input("page", 1);
+        $size = $request->input("size", 10);
+
+        $jurusans = Jurusan::query()->where(function (Builder $builder) use ($request) {
+            $name = $request->query("name");
+            if ($name) {
+                $builder->where("name", "like", "%$name%");
+            }
+            $angkatan = $request->query("angkatan");
+            if ($angkatan) {
+                $builder->where("angkatan", "=", $angkatan);
+            }
+        });
+        $jurusans = $jurusans->paginate(perPage: $size, page: $page);
+
+        return new JurusanCollection($jurusans);
+    }
 }

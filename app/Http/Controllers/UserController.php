@@ -150,7 +150,7 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
-    public function search(Request $request) {
+    public function search(Request $request): UserCollection {
         $user = Auth::user();
         $this->authorize("viewAny", $user);
 

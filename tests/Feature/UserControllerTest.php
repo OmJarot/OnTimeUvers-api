@@ -29,6 +29,25 @@ class UserControllerTest extends TestCase
         self::assertEquals("123", $user->id);
     }
 
+    public function testActing(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        //auth biasa
+        $user = User::query()->where("id", "=", "123")->first();
+        $this->actingAs($user)->get("/");
+        self::assertTrue(true);
+    }
+
+    public function testLogins(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $user = User::query()->where("id", "=", "123")->first();
+        Auth::login($user);
+        //langsung login
+        $user = Auth::user();
+        self::assertNotNull($user);
+    }
+
     public function testLogin(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
