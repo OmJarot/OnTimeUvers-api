@@ -198,6 +198,9 @@ class UserControllerTest extends TestCase
             ->assertJson([
                 "data" => true
             ]);
+
+        $user = User::where("id", "123")->first();
+        self::assertNull($user->token);
     }
 
     public function testCreateUserSuccess(): void {
@@ -289,12 +292,13 @@ class UserControllerTest extends TestCase
             ->assertJson([
                 "data" => true
             ]);
+
+        $user = User::query()->where("id", "=", "123")->first();
+        self::assertNull($user);
     }
 
     public function testDeleteNotFound(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
-
-        $user = User::query()->where("id", "=", "123")->first();
 
         $this->delete("/api/dba/users/salah", headers: ["API-Key" => "dba"])
             ->assertStatus(404)
@@ -471,6 +475,14 @@ class UserControllerTest extends TestCase
         self::assertEquals(0, count($response["data"]));
         self::assertEquals(0, $response["meta"]["total"]);
     }
+
+    public function testSearchForbidden(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $this->get("/api/users?name=user", headers: ["API-Key" => "test"])
+            ->assertStatus(403);
+    }
+
 
 
 }

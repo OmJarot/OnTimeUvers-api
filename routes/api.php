@@ -23,4 +23,6 @@ Route::middleware('auth:token')->group(function () {
     Route::get('/users', [UserController::class, 'search']);
 
     Route::post("/jurusans", [JurusanController::class, "create"]);
+    Route::get("/jurusans/{id}", [JurusanController::class, "get"]);
+    Route::delete("/jurusans/{id}", [JurusanController::class, "delete"]);
 });
