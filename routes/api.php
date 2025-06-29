@@ -12,9 +12,10 @@ Route::post("/users/login", [UserController::class, "login"])->name("login");
 
 Route::middleware('auth:token')->group(function () {
     Route::get('/users/current', [UserController::class, 'current']);
-    Route::put('/users/update', [UserController::class, 'updateCurrent']);
+    Route::put('/users/update', [UserController::class, 'updatePassword']);
     Route::delete('/users/logout', [UserController::class, 'logout']);
-    Route::delete('/users/delete/{id}', [UserController::class, 'delete']);
 
-    Route::post('/dba/create', [UserController::class, 'createUser']);
+    Route::delete('/dba/users/{id}', [UserController::class, 'delete']);
+    Route::post('/dba/users', [UserController::class, 'createUser']);
+    Route::patch('/dba/users', [UserController::class, 'updateUser']);
 });

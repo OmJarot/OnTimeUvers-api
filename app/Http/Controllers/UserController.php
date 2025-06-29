@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
@@ -53,7 +54,7 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
-    public function updateCurrent(UpdateUserRequest $request): UserResource {
+    public function updatePassword(UpdatePasswordRequest $request): UserResource {
         $data = $request->validated();
         $user = Auth::user();
         $this->authorize("update", $user);
@@ -125,5 +126,25 @@ class UserController extends Controller
         return response()->json([
             "data" => true
         ])->setStatusCode(200);
+    }
+
+    public function updateUser(UpdateUserRequest $request): UserResource {
+        $data = $request->validated();
+        $user = User::query()->where("id", "=", $data["id"])->first();
+        if (!$user){
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "Not found"
+                    ]
+                ]
+            ])->setStatusCode(404));
+        }
+        $this->authorize("update", $user);
+
+        $user->fill($data);
+        $user->password = Hash::make($data["password"]);
+        $user->save();
+        return new UserResource($user);
     }
 }

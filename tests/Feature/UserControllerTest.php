@@ -202,7 +202,7 @@ class UserControllerTest extends TestCase
     public function testCreateUserSuccess(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->post("/api/dba/create", [
+        $this->post("/api/dba/users", [
             "id" => "122",
             "name" => "new",
             "password" => "new",
@@ -222,7 +222,7 @@ class UserControllerTest extends TestCase
     public function testCreateUserForbidden(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->post("/api/dba/create", [
+        $this->post("/api/dba/users", [
             "id" => "122",
             "name" => "new",
             "password" => "new",
@@ -234,7 +234,7 @@ class UserControllerTest extends TestCase
     public function testCreateUserValidationError(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->post("/api/dba/create", [
+        $this->post("/api/dba/users", [
             "id" => "",
             "name" => "",
             "password" => "",
@@ -262,7 +262,7 @@ class UserControllerTest extends TestCase
     public function testCreateUserAlreadyExist(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->post("/api/dba/create", [
+        $this->post("/api/dba/users", [
             "id" => "123",
             "name" => "piter",
             "password" => "piter",
@@ -283,7 +283,7 @@ class UserControllerTest extends TestCase
 
         $user = User::query()->where("id", "=", "123")->first();
 
-        $this->delete("/api/users/delete/".$user->id, headers: ["API-Key" => "dba"])
+        $this->delete("/api/dba/users/".$user->id, headers: ["API-Key" => "dba"])
             ->assertStatus(200)
             ->assertJson([
                 "data" => true
@@ -295,7 +295,7 @@ class UserControllerTest extends TestCase
 
         $user = User::query()->where("id", "=", "123")->first();
 
-        $this->delete("/api/users/delete/salah", headers: ["API-Key" => "dba"])
+        $this->delete("/api/dba/users/salah", headers: ["API-Key" => "dba"])
             ->assertStatus(404)
             ->assertJson([
                 "errors" => [
@@ -311,7 +311,84 @@ class UserControllerTest extends TestCase
 
         $user = User::query()->where("id", "=", "123")->first();
 
-        $this->delete("/api/users/delete/".$user->id, headers: ["API-Key" => "test"])
+        $this->delete("/api/dba/users/".$user->id, headers: ["API-Key" => "test"])
+            ->assertStatus(403);
+    }
+
+    public function testUpdateUser(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $this->patch("/api/dba/users", [
+            "id" => "123",
+            "name" => "new",
+            "password" => "new",
+            "jurusan" => "tpl2023"
+        ], ["API-Key" => "dba"])
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    "id" => "123",
+                    "name" => "new",
+                    "jurusan" => "tpl",
+                    "level" => "user"
+                ]
+            ]);
+
+    }
+
+    public function testUpdateUserValidationError(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $this->patch("/api/dba/users", [
+            "id" => "123",
+            "name" => "",
+            "password" => "",
+            "jurusan" => ""
+        ], ["API-Key" => "dba"])
+            ->assertStatus(400)
+            ->assertJson([
+                "errors" => [
+                    "name" => [
+                        "The name field is required."
+                    ],
+                    "password" => [
+                        "The password field is required."
+                    ],
+                    "jurusan" =>[
+                        "The jurusan field is required."
+                    ]
+                ]
+            ]);
+    }
+
+    public function testUpdateUserNotFound(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $this->patch("/api/dba/users", [
+            "id" => "12334",
+            "name" => "new",
+            "password" => "new",
+            "jurusan" => "tpl2023"
+        ], ["API-Key" => "dba"])
+            ->assertStatus(404)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "Not found"
+                    ]
+                ]
+            ]);
+    }
+
+    public function testUpdateUserForbidden(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $this->patch("/api/dba/users", [
+            "id" => "12334",
+            "name" => "new",
+            "password" => "new",
+            "jurusan" => "tpl2023"
+        ], ["API-Key" => "test"])
             ->assertStatus(403);
     }
 
