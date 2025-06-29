@@ -11,7 +11,7 @@ class CreateJadwalRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()->level == "dba";
     }
 
     /**
@@ -22,7 +22,16 @@ class CreateJadwalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "senin_1" => ["max:100"],
+            "senin_2" => ["max:100"],
+            "selasa_1" => ["max:100"],
+            "selasa_2" => ["max:100"],
+            "rabu_1" => ["max:100"],
+            "rabu_2" => ["max:100"],
+            "kamis_1" => ["max:100"],
+            "kamis_2" => ["max:100"],
+            "jumat_1" => ["max:100"],
+            "jumat_2" => ["max:100"],
         ];
     }
 }

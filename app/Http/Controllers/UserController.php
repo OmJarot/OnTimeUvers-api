@@ -8,6 +8,7 @@ use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
+use App\Models\Jadwal;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -107,6 +108,7 @@ class UserController extends Controller
         $newUser->level = "user";
         $newUser->password = Hash::make($newUser->password);
         $newUser->save();
+        Jadwal::create(["id" => $newUser->id]);
         return new UserResource($newUser);
     }
 
@@ -119,7 +121,7 @@ class UserController extends Controller
             throw new HttpResponseException(response()->json([
                 "errors" => [
                     "message" => [
-                        "Not found"
+                        "Not Found"
                     ]
                 ]
             ])->setStatusCode(404));
@@ -137,7 +139,7 @@ class UserController extends Controller
             throw new HttpResponseException(response()->json([
                 "errors" => [
                     "message" => [
-                        "Not found"
+                        "Not Found"
                     ]
                 ]
             ])->setStatusCode(404));

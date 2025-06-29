@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -26,4 +27,6 @@ Route::middleware('auth:token')->group(function () {
     Route::get("/jurusans/{id}", [JurusanController::class, "get"]);
     Route::delete("/jurusans/{id}", [JurusanController::class, "delete"]);
     Route::get("/jurusans", [JurusanController::class, "search"]);
+
+    Route::patch("/jadwal/{id}", [JadwalController::class, "create"]);
 });

@@ -16,15 +16,15 @@ class JurusanControllerTest extends TestCase
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
         $this->post("/api/jurusans", [
-            "name" => "tpl",
+            "name" => "tpll",
             "angkatan" => 2023
         ], [
             "API-Key" => "dba"
         ])->assertStatus(201)
             ->assertJson([
                 "data" => [
-                    "id" => "tpl 2023",
-                    "name" => "tpl",
+                    "id" => "tpll 2023",
+                    "name" => "tpll",
                     "angkatan" => "2023"
                 ]
             ]);

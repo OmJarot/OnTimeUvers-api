@@ -24,7 +24,6 @@ return new class extends Migration
             $table->string("jumat_1", 100)->nullable();
             $table->string("jumat_2", 100)->nullable();
             $table->foreign("id")->references("id")->on("users");
-            $table->timestamps();
         });
     }
 

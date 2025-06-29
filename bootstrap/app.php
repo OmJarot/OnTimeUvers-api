@@ -19,7 +19,20 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (AuthenticationException $e, Request $request){
             return response()->json([
-                'message' => 'Unauthorized',
+                'data' => [
+                    "message" => [
+                        "Unauthorized"
+                    ]
+                ],
             ], 401);
+        });
+        $exceptions->render(function (AuthenticationException $e, Request $request){
+            return response()->json([
+                'data' => [
+                    'message' => [
+                        "Not Found"
+                    ]
+                ],
+            ], 404);
         });
     })->create();

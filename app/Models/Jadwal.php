@@ -11,7 +11,7 @@ class Jadwal extends Model
     protected $primaryKey = "id";
     protected $keyType = "string";
     public $incrementing = false;
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected $fillable = [
         "id",

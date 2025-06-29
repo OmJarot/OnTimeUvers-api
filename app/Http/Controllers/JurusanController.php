@@ -6,6 +6,7 @@ use App\Http\Requests\CraeteJurusanRequest;
 use App\Http\Resources\JurusanCollection;
 use App\Http\Resources\JurusanResource;
 use App\Models\Jurusan;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -19,8 +20,7 @@ class JurusanController extends Controller
     use AuthorizesRequests;
 
     public function create(CraeteJurusanRequest $request):JurusanResource {
-        $user = Auth::user();
-        $this->authorize("create", $user);
+        $this->authorize("create", User::class);
 
         $data = $request->validated();
 

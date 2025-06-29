@@ -324,7 +324,7 @@ class UserControllerTest extends TestCase
             ->assertJson([
                 "errors" => [
                     "message" => [
-                        "Not found"
+                        "Not Found"
                     ]
                 ]
             ]);
@@ -398,7 +398,7 @@ class UserControllerTest extends TestCase
             ->assertJson([
                 "errors" => [
                     "message" => [
-                        "Not found"
+                        "Not Found"
                     ]
                 ]
             ]);
