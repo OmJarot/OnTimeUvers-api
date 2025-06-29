@@ -14,4 +14,6 @@ Route::middleware('auth:token')->group(function () {
     Route::get('/users/current', [UserController::class, 'current']);
     Route::post('/users/update', [UserController::class, 'updateCurrent']);
     Route::get('/users/logout', [UserController::class, 'logout']);
+
+    Route::post('/dba/create', [UserController::class, 'createUser']);
 });

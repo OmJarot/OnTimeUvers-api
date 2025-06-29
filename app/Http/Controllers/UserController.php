@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
@@ -84,7 +85,25 @@ class UserController extends Controller
         ])->setStatusCode(200);
     }
 
-    public function createUser() {
+    public function createUser(CreateUserRequest $request): UserResource {
+        $user = Auth::user();
+        $this->authorize("create", $user);
+        $data = $request->validated();
 
+        if (User::query()->where("id", "=", $data["id"])->count() == 1){
+            throw new HttpResponseException(response([
+                "errors" => [
+                    "id" => [
+                        "nim already registered"
+                    ]
+                ]
+            ],400));
+        }
+
+        $newUser = User::make($data);
+        $newUser->level = "user";
+        $newUser->password = Hash::make($newUser->password);
+        $newUser->save();
+        return new UserResource($newUser);
     }
 }

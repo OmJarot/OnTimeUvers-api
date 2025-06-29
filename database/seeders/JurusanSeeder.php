@@ -18,5 +18,11 @@ class JurusanSeeder extends Seeder
             "name" => "tpl",
             "angkatan" => 2023
         ]);
+
+        Jurusan::create([
+            "id" => "dba",
+            "name" => "dba",
+            "angkatan" => 2023
+        ]);
     }
 }

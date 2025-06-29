@@ -23,5 +23,14 @@ class UserSeeder extends Seeder
             "token" => "test"
         ]);
 
+        User::query()->create([
+            "id" => "dba",
+            "name" => "dba",
+            "password" => Hash::make("dba"),
+            "level" => "dba",
+            "jurusan_id" => "dba",
+            "token" => "dba"
+        ]);
+
     }
 }

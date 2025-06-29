@@ -34,4 +34,5 @@ class LoginRequest extends FormRequest
             "errors" => $validator->getMessageBag()
         ], 400));
     }
+
 }

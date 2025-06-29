@@ -39,6 +39,7 @@ class UserControllerTest extends TestCase
                 "data" => [
                     "id" => "123",
                     "name" => "piter",
+                    "jurusan" => "tpl",
                     "level" => "user"
                 ]
             ]);
@@ -89,6 +90,7 @@ class UserControllerTest extends TestCase
                 "data" => [
                     "id" => "123",
                     "name" => "piter",
+                    "jurusan" => "tpl",
                     "level" => "user"
                 ]
             ]);
@@ -114,6 +116,7 @@ class UserControllerTest extends TestCase
                 "data" => [
                     "id" => "123",
                     "name" => "piter",
+                    "jurusan" => "tpl",
                     "level" => "user"
                 ]
             ]);
@@ -192,6 +195,85 @@ class UserControllerTest extends TestCase
             ->assertStatus(200)
             ->assertJson([
                 "data" => true
+            ]);
+    }
+
+    public function testCreateUserSuccess(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $this->post("/api/dba/create", [
+            "id" => "122",
+            "name" => "new",
+            "password" => "new",
+            "jurusan_id" => "tpl2023"
+        ], ["API-Key" => "dba"])
+            ->assertStatus(201)
+            ->assertJson([
+                "data" => [
+                    "id" => "122",
+                    "name" => "new",
+                    "jurusan" => "tpl",
+                    "level" => "user"
+                ]
+            ]);
+    }
+
+    public function testCreateUserForbidden(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $this->post("/api/dba/create", [
+            "id" => "122",
+            "name" => "new",
+            "password" => "new",
+            "jurusan_id" => "tpl2023"
+        ], ["API-Key" => "test"])
+            ->assertStatus(403);
+    }
+
+    public function testCreateUserValidationError(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $this->post("/api/dba/create", [
+            "id" => "",
+            "name" => "",
+            "password" => "",
+            "jurusan_id" => ""
+        ], ["API-Key" => "dba"])
+            ->assertStatus(400)
+            ->assertJson([
+                "errors" => [
+                    "id" => [
+                        "The id field is required."
+                    ],
+                    "name" => [
+                        "The name field is required."
+                    ],
+                    "password" => [
+                        "The password field is required."
+                    ],
+                    "jurusan_id" =>[
+                        "The jurusan id field is required."
+                    ]
+                ]
+            ]);
+    }
+
+    public function testCreateUserAlreadyExist(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $this->post("/api/dba/create", [
+            "id" => "123",
+            "name" => "piter",
+            "password" => "piter",
+            "jurusan_id" => "tpl2023"
+        ], ["API-Key" => "dba"])
+            ->assertStatus(400)
+            ->assertJson([
+                "errors" => [
+                    "id" => [
+                        "nim already registered"
+                    ]
+                ]
             ]);
     }
 
