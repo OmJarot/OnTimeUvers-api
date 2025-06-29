@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Database\Seeders\JurusanSeeder;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -13,7 +14,7 @@ use Tests\TestCase;
 class UserControllerTest extends TestCase
 {
     public function testUser(): void {
-        $this->seed([UserSeeder::class]);
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
         $success = Auth::attempt([
             "id" => "123",
@@ -28,7 +29,7 @@ class UserControllerTest extends TestCase
     }
 
     public function testLogin(): void {
-        $this->seed([UserSeeder::class]);
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
         $this->post("/api/users/login", [
             "id" => "123",
@@ -47,7 +48,7 @@ class UserControllerTest extends TestCase
     }
 
     public function testLoginValidationError(): void {
-        $this->seed([UserSeeder::class]);
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
         $this->post("/api/users/login", [
             "id" => "",
@@ -80,7 +81,7 @@ class UserControllerTest extends TestCase
     }
 
     public function testCurrentSuccess(): void {
-        $this->seed([UserSeeder::class]);
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
         $this->get("/api/users/current", headers:["API-Key" => "test"])
             ->assertStatus(200)
@@ -99,7 +100,7 @@ class UserControllerTest extends TestCase
     }
 
     public function testUpdateSuccess(): void {
-        $this->seed([UserSeeder::class]);
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
         $this->post("/api/users/update",
             data: [
@@ -119,7 +120,7 @@ class UserControllerTest extends TestCase
     }
 
     public function testUpdateValidationError(): void {
-        $this->seed([UserSeeder::class]);
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
         $this->post("/api/users/update",
             data: [
@@ -145,7 +146,7 @@ class UserControllerTest extends TestCase
     }
 
     public function testUpdateWrongOldPassword(): void {
-        $this->seed([UserSeeder::class]);
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
         $this->post("/api/users/update",
             data: [
@@ -165,7 +166,7 @@ class UserControllerTest extends TestCase
     }
 
     public function testUpdateWrongRetypePassword(): void {
-        $this->seed([UserSeeder::class]);
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
         $this->post("/api/users/update",
             data: [
@@ -185,7 +186,7 @@ class UserControllerTest extends TestCase
     }
 
     public function testLogoutSuccess(): void {
-        $this->seed([UserSeeder::class]);
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
         $this->get("/api/users/logout", headers: ["API-Key" => "test"])
             ->assertStatus(200)

@@ -83,4 +83,8 @@ class UserController extends Controller
             "data" => true
         ])->setStatusCode(200);
     }
+
+    public function createUser() {
+
+    }
 }
