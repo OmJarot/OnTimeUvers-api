@@ -12,7 +12,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->level == "dba" || $user->level == "admin";
     }
 
     /**
@@ -20,7 +20,7 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        return $user->level === "dba" || $user->id === $model->id;
+        return $user->level === "dba" || $user->id === $model->id || $user->level == "admin";
     }
 
     /**

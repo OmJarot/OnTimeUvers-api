@@ -18,4 +18,6 @@ Route::middleware('auth:token')->group(function () {
     Route::delete('/dba/users/{id}', [UserController::class, 'delete']);
     Route::post('/dba/users', [UserController::class, 'createUser']);
     Route::patch('/dba/users', [UserController::class, 'updateUser']);
+
+    Route::get('/users', [UserController::class, 'search']);
 });

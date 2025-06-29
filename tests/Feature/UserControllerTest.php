@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Database\Seeders\JurusanSeeder;
+use Database\Seeders\UserSearchSeeder;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -390,6 +391,85 @@ class UserControllerTest extends TestCase
             "jurusan" => "tpl2023"
         ], ["API-Key" => "test"])
             ->assertStatus(403);
+    }
+
+    public function testSearch(): void {
+        $this->seed([JurusanSeeder::class, UserSearchSeeder::class]);
+
+        $response = $this->get("/api/users", headers: ["API-Key" => "dba"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(10, count($response["data"]));
+        self::assertEquals(21, $response["meta"]["total"]);
+
+    }
+
+    public function testSearchName(): void {
+        $this->seed([JurusanSeeder::class, UserSearchSeeder::class]);
+
+        $response = $this->get("/api/users?name=user", headers: ["API-Key" => "dba"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(10, count($response["data"]));
+        self::assertEquals(20, $response["meta"]["total"]);
+    }
+
+    public function testSearchJurusan(): void {
+        $this->seed([JurusanSeeder::class, UserSearchSeeder::class]);
+
+        $response = $this->get("/api/users?jurusan=tpl", headers: ["API-Key" => "dba"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(10, count($response["data"]));
+        self::assertEquals(20, $response["meta"]["total"]);
+    }
+
+    public function testSearchAngkatan(): void {
+        $this->seed([JurusanSeeder::class, UserSearchSeeder::class]);
+
+        $response = $this->get("/api/users?angkatan=2023", headers: ["API-Key" => "dba"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(10, count($response["data"]));
+        self::assertEquals(21, $response["meta"]["total"]);
+    }
+
+    public function testSearchAll(): void {
+        $this->seed([JurusanSeeder::class, UserSearchSeeder::class]);
+
+        $response = $this->get("/api/users?name=user&jurusan=tpl&angkatan=2023", headers: ["API-Key" => "dba"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(10, count($response["data"]));
+        self::assertEquals(20, $response["meta"]["total"]);
+    }
+
+    public function testSearchWithPage(): void {
+        $this->seed([JurusanSeeder::class, UserSearchSeeder::class]);
+
+        $response = $this->get("/api/users?size=5&page=2", headers: ["API-Key" => "dba"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(5, count($response["data"]));
+        self::assertEquals(2, $response["meta"]["current_page"]);
+        self::assertEquals(21, $response["meta"]["total"]);
+    }
+
+    public function testNotFound(): void {
+        $this->seed([JurusanSeeder::class, UserSearchSeeder::class]);
+
+        $response = $this->get("/api/users?name=tidak", headers: ["API-Key" => "dba"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(0, count($response["data"]));
+        self::assertEquals(0, $response["meta"]["total"]);
     }
 
 
