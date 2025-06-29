@@ -14,7 +14,7 @@ class JurusanSeeder extends Seeder
     public function run(): void
     {
         Jurusan::create([
-            "id" => "tpl2023",
+            "id" => "tpl 2023",
             "name" => "tpl",
             "angkatan" => 2023
         ]);

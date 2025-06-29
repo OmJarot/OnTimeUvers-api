@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Jurusan;
 use App\Models\User;
+use App\Policies\JurusanPolicy;
 use App\Policies\UserPolicy;
 use App\Providers\Guard\TokenGuard;
 use Illuminate\Foundation\Application;
@@ -36,5 +38,6 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::policy(User::class, UserPolicy::class);
+        Gate::policy(Jurusan::class, JurusanPolicy::class);
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,4 +21,6 @@ Route::middleware('auth:token')->group(function () {
     Route::patch('/dba/users', [UserController::class, 'updateUser']);
 
     Route::get('/users', [UserController::class, 'search']);
+
+    Route::post("/jurusans", [JurusanController::class, "create"]);
 });

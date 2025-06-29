@@ -207,7 +207,7 @@ class UserControllerTest extends TestCase
             "id" => "122",
             "name" => "new",
             "password" => "new",
-            "jurusan_id" => "tpl2023"
+            "jurusan_id" => "tpl 2023"
         ], ["API-Key" => "dba"])
             ->assertStatus(201)
             ->assertJson([

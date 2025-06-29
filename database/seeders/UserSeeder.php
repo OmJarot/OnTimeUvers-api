@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
             "name" => "piter",
             "password" => Hash::make("piter"),
             "level" => "user",
-            "jurusan_id" => "tpl2023",
+            "jurusan_id" => "tpl 2023",
             "token" => "test"
         ]);
 

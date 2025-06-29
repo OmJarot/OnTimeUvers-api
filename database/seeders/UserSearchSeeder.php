@@ -29,7 +29,7 @@ class UserSearchSeeder extends Seeder
                 "name" => "user $i",
                 "password" => Hash::make("test"),
                 "level" => "user",
-                "jurusan_id" => "tpl2023",
+                "jurusan_id" => "tpl 2023",
             ]);
         }
     }
