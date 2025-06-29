@@ -104,7 +104,7 @@ class UserControllerTest extends TestCase
     public function testUpdateSuccess(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->post("/api/users/update",
+        $this->put("/api/users/update",
             data: [
                 "oldPassword" => "piter",
                 "newPassword" => "update",
@@ -125,7 +125,7 @@ class UserControllerTest extends TestCase
     public function testUpdateValidationError(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->post("/api/users/update",
+        $this->put("/api/users/update",
             data: [
                 "oldPassword" => "",
                 "newPassword" => "",
@@ -151,7 +151,7 @@ class UserControllerTest extends TestCase
     public function testUpdateWrongOldPassword(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->post("/api/users/update",
+        $this->put("/api/users/update",
             data: [
                 "oldPassword" => "salah",
                 "newPassword" => "test",
@@ -171,7 +171,7 @@ class UserControllerTest extends TestCase
     public function testUpdateWrongRetypePassword(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->post("/api/users/update",
+        $this->put("/api/users/update",
             data: [
                 "oldPassword" => "piter",
                 "newPassword" => "test",
@@ -188,10 +188,11 @@ class UserControllerTest extends TestCase
             ]);
     }
 
+
     public function testLogoutSuccess(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->get("/api/users/logout", headers: ["API-Key" => "test"])
+        $this->delete("/api/users/logout", headers: ["API-Key" => "test"])
             ->assertStatus(200)
             ->assertJson([
                 "data" => true
@@ -275,6 +276,43 @@ class UserControllerTest extends TestCase
                     ]
                 ]
             ]);
+    }
+
+    public function testDelete(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $user = User::query()->where("id", "=", "123")->first();
+
+        $this->delete("/api/users/delete/".$user->id, headers: ["API-Key" => "dba"])
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => true
+            ]);
+    }
+
+    public function testDeleteNotFound(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $user = User::query()->where("id", "=", "123")->first();
+
+        $this->delete("/api/users/delete/salah", headers: ["API-Key" => "dba"])
+            ->assertStatus(404)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "Not found"
+                    ]
+                ]
+            ]);
+    }
+
+    public function testDeleteForbidden(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $user = User::query()->where("id", "=", "123")->first();
+
+        $this->delete("/api/users/delete/".$user->id, headers: ["API-Key" => "test"])
+            ->assertStatus(403);
     }
 
 
