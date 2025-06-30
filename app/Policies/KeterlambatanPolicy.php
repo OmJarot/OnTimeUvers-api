@@ -13,7 +13,7 @@ class KeterlambatanPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->level == "admin" || $user->level == "security";
+        return $user->level == "admin" || $user->level == "security" || $user->level == "user";
     }
 
     /**

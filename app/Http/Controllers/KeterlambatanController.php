@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\InputKeterlambatanRequest;
 use App\Http\Requests\InputManualRequest;
+use App\Http\Resources\KeterlambatanCollection;
 use App\Http\Resources\KeterlambatanResource;
 use App\Models\Keterlambatan;
 use App\Models\User;
@@ -95,6 +96,24 @@ class KeterlambatanController extends Controller
         ]);
         return new KeterlambatanResource($keterlambatan);
     }
+
+    public function get(string $id): KeterlambatanCollection {
+        $this->authorize("viewAny", Keterlambatan::class);
+
+        $keterlambatans = Keterlambatan::query()->where("user_id", "=", $id)->get();
+        if ($keterlambatans->count() < 1){
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "Not Found"
+                    ]
+                ]
+            ], 404));
+        }
+        return new KeterlambatanCollection($keterlambatans);
+    }
+
+
 
     private function getSesi(string $waktu) {
         $key = collect([

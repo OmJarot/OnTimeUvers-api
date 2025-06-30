@@ -186,8 +186,4 @@ class UserController extends Controller
 
         return new UserCollection($users);
     }
-
-    public function createSelected(CreateSelectedJadwalRequest $request): JsonResponse{
-
-    }
 }

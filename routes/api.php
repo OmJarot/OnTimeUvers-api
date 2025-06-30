@@ -35,4 +35,5 @@ Route::middleware('auth:token')->group(function () {
 
     Route::post("/keterlambatan", [KeterlambatanController::class, "input"]);
     Route::post("/keterlambatan/input", [KeterlambatanController::class, "inputById"]);
+    Route::get("/keterlambatan/{id}", [KeterlambatanController::class, "get"]);
 });

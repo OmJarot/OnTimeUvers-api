@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Database\Seeders\JadwalSeeder;
 use Database\Seeders\JurusanSeeder;
+use Database\Seeders\KeterlambatanSeeder;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -164,6 +165,36 @@ class KeterlambatanTest extends TestCase
             "waktu" => "30-06-2024 12:18"
         ], ["API-Key" => "dba"])
             ->assertStatus(403);
+    }
+
+    public function testGet(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, KeterlambatanSeeder::class]);
+
+        $this->get("/api/keterlambatan/123", headers: ["API-Key" => "test"])
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    [
+                        "user_id" => "123",
+                        "matkul" => "android",
+                        "waktu" => "2024-06-30 19:18:00"
+                    ]
+                ]
+            ]);
+    }
+
+    public function testGetNotFound(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, KeterlambatanSeeder::class]);
+
+        $this->get("/api/keterlambatan/12", headers: ["API-Key" => "test"])
+            ->assertStatus(404)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "Not Found"
+                    ]
+                ]
+            ]);
     }
 
 
