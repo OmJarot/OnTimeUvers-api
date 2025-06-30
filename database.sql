@@ -6,6 +6,7 @@ drop table migrations;
 select * from users;
 select * from jurusans;
 select * from jadwals;
+select * from keterlambatans;
 
 select * from cache_locks;
 delete from jadwals;

@@ -156,8 +156,7 @@ class UserController extends Controller
     }
 
     public function search(Request $request): UserCollection {
-        $user = Auth::user();
-        $this->authorize("viewAny", $user);
+        $this->authorize("viewAny", User::class);
 
         $page = $request->input("page", 1);
         $size = $request->input("size", 10);

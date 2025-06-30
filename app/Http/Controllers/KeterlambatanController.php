@@ -6,6 +6,8 @@ use App\Http\Requests\InputKeterlambatanRequest;
 use App\Http\Requests\InputManualRequest;
 use App\Http\Resources\KeterlambatanCollection;
 use App\Http\Resources\KeterlambatanResource;
+use App\Http\Resources\SearchKeterlambatanCollection;
+use App\Http\Resources\UserCollection;
 use App\Models\Keterlambatan;
 use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -21,6 +23,17 @@ class KeterlambatanController extends Controller
         $this->authorize("create", Keterlambatan::class);
         $data = $request->validated();
         $user = Auth::user();
+
+        $date = Carbon::parse($data["waktu"])->toDateString();
+        if ($user->keterlambatans()->whereDate("waktu", $date)->exists()){
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "cannot input double"
+                    ]
+                ]
+            ])->setStatusCode(400));
+        }
 
         $sesi = $this->getSesi($data["waktu"]);
 
@@ -77,6 +90,16 @@ class KeterlambatanController extends Controller
                 ]
             ], 404));
         }
+        $date = Carbon::parse($data["waktu"])->toDateString();
+        if ($user->keterlambatans()->whereDate("waktu", $date)->exists()){
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "cannot input double"
+                    ]
+                ]
+            ])->setStatusCode(400));
+        }
         $matkul = optional($user->jadwal)->$sesi;
 
         if (is_null($matkul)) {
@@ -113,7 +136,39 @@ class KeterlambatanController extends Controller
         return new KeterlambatanCollection($keterlambatans);
     }
 
+    public function search(Request $request): SearchKeterlambatanCollection {
+        $this->authorize("viewAny", Keterlambatan::class);
 
+        $page = $request->input("page", 1);
+        $size = $request->input("size", 10);
+
+        $name = $request->query("name");
+        $jurusan = $request->query("jurusan");
+        $angkatan = $request->query("angkatan");
+        $tanggal = $request->query("tanggal");
+
+        $query = Keterlambatan::query()
+            ->with("user")
+            ->whereHas("user", function ($query) use ($name, $jurusan, $angkatan) {
+                if ($name) {
+                    $query->where("name", "like", "%{$name}%");
+                }
+                if ($jurusan) {
+                    $query->where("jurusan_id", "like", "%{$jurusan}%");
+                }
+                if ($angkatan) {
+                    $query->where("jurusan_id", "like", "%{$angkatan}%");
+                }
+            });
+
+        if ($tanggal){
+            $query->whereDate("waktu", $tanggal);
+        }
+
+        $keterlambatan = $query->paginate(perPage: $size, page: $page);
+        return new SearchKeterlambatanCollection($keterlambatan);
+
+    }
 
     private function getSesi(string $waktu) {
         $key = collect([

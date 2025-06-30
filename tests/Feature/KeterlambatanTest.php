@@ -6,6 +6,7 @@ use App\Models\User;
 use Database\Seeders\JadwalSeeder;
 use Database\Seeders\JurusanSeeder;
 use Database\Seeders\KeterlambatanSeeder;
+use Database\Seeders\SearchKeterlambatanSeed;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -33,6 +34,23 @@ class KeterlambatanTest extends TestCase
         $keterlambatans = $user->keterlambatans()->count();
         self::assertEquals(1, $keterlambatans);
     }
+
+    public function testInputDouble(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, JadwalSeeder::class, KeterlambatanSeeder::class]);
+
+        $this->post("/api/keterlambatan", [
+            "waktu" => "30-06-2024 19:18"
+        ], ["API-Key" => "test"])
+            ->assertStatus(400)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "cannot input double"
+                    ]
+                ]
+            ]);
+    }
+
 
     public function testInputValidationError(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class, JadwalSeeder::class]);
@@ -109,6 +127,24 @@ class KeterlambatanTest extends TestCase
         $keterlambatans = $user->keterlambatans()->count();
         self::assertEquals(1, $keterlambatans);
     }
+
+    public function testInputManualDouble(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, JadwalSeeder::class, KeterlambatanSeeder::class]);
+
+        $this->post("/api/keterlambatan/input", [
+            "id" => "123",
+            "name" => "piter",
+            "waktu" => "30-06-2024 19:18"
+        ], ["API-Key" => "security"])
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "cannot input double"
+                    ]
+                ]
+            ]);
+    }
+
     public function testInputManualValidationError(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class, JadwalSeeder::class]);
 
@@ -195,6 +231,84 @@ class KeterlambatanTest extends TestCase
                     ]
                 ]
             ]);
+    }
+
+    public function testSearchKeterlambatan(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, SearchKeterlambatanSeed::class]);
+
+        $response = $this->get("/api/keterlambatan", ["API-Key" => "test"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(10, count($response["data"]));
+        self::assertEquals(10, $response["meta"]["total"]);
+    }
+
+    public function testSearchKeterlambatanByName(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, SearchKeterlambatanSeed::class]);
+
+        $response = $this->get("/api/keterlambatan?name=piter", ["API-Key" => "test"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(10, count($response["data"]));
+        self::assertEquals(10, $response["meta"]["total"]);
+    }
+
+    public function testSearchKeterlambatanByJurusan(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, SearchKeterlambatanSeed::class]);
+
+        $response = $this->get("/api/keterlambatan?jurusan=tpl", ["API-Key" => "test"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(10, count($response["data"]));
+        self::assertEquals(10, $response["meta"]["total"]);
+    }
+
+    public function testSearchKeterlambatanByAngkatan(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, SearchKeterlambatanSeed::class]);
+
+        $response = $this->get("/api/keterlambatan?angkatan=2023", ["API-Key" => "test"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(10, count($response["data"]));
+        self::assertEquals(10, $response["meta"]["total"]);
+    }
+
+    public function testSearchKeterlambatanByDate(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, SearchKeterlambatanSeed::class]);
+
+        $response = $this->get("/api/keterlambatan?date=2024-06-30", ["API-Key" => "test"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(10, count($response["data"]));
+        self::assertEquals(10, $response["meta"]["total"]);
+    }
+
+    public function testNotFound(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, SearchKeterlambatanSeed::class]);
+
+        $response = $this->get("/api/keterlambatan?name=tidak ada", ["API-Key" => "test"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(0, count($response["data"]));
+        self::assertEquals(0, $response["meta"]["total"]);
+    }
+
+    public function testWithPage(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, SearchKeterlambatanSeed::class]);
+
+        $response = $this->get("/api/keterlambatan?size=5&page=2", ["API-Key" => "test"])
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(5, count($response["data"]));
+        self::assertEquals(2, $response["meta"]["current_page"]);
+        self::assertEquals(10, $response["meta"]["total"]);
     }
 
 
