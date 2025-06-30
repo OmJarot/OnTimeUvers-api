@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class CreateSelectedJadwalRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class CreateSelectedJadwalRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()->level == "dba";
     }
 
     /**
@@ -36,5 +38,10 @@ class CreateSelectedJadwalRequest extends FormRequest
             "jadwal.jumat_1" => ["nullable", "string", "max:100"],
             "jadwal.jumat_2" => ["nullable", "string", "max:100"],
         ];
+    }
+    protected function failedValidation(Validator $validator) {
+        throw new HttpResponseException(response([
+            "errors" => $validator->getMessageBag()
+        ], 400));
     }
 }

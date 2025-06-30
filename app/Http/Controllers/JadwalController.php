@@ -10,6 +10,7 @@ use App\Models\Jadwal;
 use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -53,7 +54,7 @@ class JadwalController extends Controller
         return new JadwalResource($jadwal);
     }
 
-    public function createSelected(CreateSelectedJadwalRequest $request): JadwalCollection {
+    public function createSelected(CreateSelectedJadwalRequest $request): JsonResponse {
         $data = $request->validated();
         $this->authorize("create", Jadwal::class);
 
@@ -87,6 +88,8 @@ class JadwalController extends Controller
 
         });
 
-        return new JadwalCollection($data);
+        return response()->json([
+            "data" => $data
+        ])->setStatusCode(200);
     }
 }

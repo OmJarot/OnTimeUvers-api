@@ -14,12 +14,12 @@ Route::post("/users/login", [UserController::class, "login"])->name("login");
 
 Route::middleware('auth:token')->group(function () {
     Route::get('/users/current', [UserController::class, 'current']);
-    Route::put('/users/update', [UserController::class, 'updatePassword']);
+    Route::patch('/users/update', [UserController::class, 'updatePassword']);
     Route::delete('/users/logout', [UserController::class, 'logout']);
 
     Route::delete('/dba/users/{id}', [UserController::class, 'delete']);
     Route::post('/dba/users', [UserController::class, 'createUser']);
-    Route::patch('/dba/users', [UserController::class, 'updateUser']);
+    Route::put('/dba/users', [UserController::class, 'updateUser']);
 
     Route::get('/users', [UserController::class, 'search']);
 
@@ -28,6 +28,7 @@ Route::middleware('auth:token')->group(function () {
     Route::delete("/jurusans/{id}", [JurusanController::class, "delete"]);
     Route::get("/jurusans", [JurusanController::class, "search"]);
 
-    Route::patch("/jadwal/{id}", [JadwalController::class, "create"]);
+    Route::put("/jadwal/{id}", [JadwalController::class, "create"]);
     Route::get("/jadwal/{id}", [JadwalController::class, "get"]);
+    Route::put("/jadwal", [JadwalController::class, "createSelected"]);
 });

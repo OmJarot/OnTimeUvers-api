@@ -28,6 +28,10 @@ class JurusanControllerTest extends TestCase
                     "angkatan" => "2023"
                 ]
             ]);
+
+        $jurusan = Jurusan::query()->where("id", "=", "tpll 2023")->first();
+        self::assertNotNull($jurusan);
+        self::assertEquals("tpll", $jurusan->name);
     }
 
     public function testCreateValidationError(): void {
@@ -89,6 +93,10 @@ class JurusanControllerTest extends TestCase
                     "angkatan" => "2023"
                 ]
             ]);
+
+        $jurusan = Jurusan::query()->where("id", "=", "tpl 2023")->first();
+        self::assertNotNull($jurusan);
+        self::assertEquals("tpl", $jurusan->name);
     }
 
     public function testGetJurusanNotFound(): void {

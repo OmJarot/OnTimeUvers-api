@@ -2,8 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\Jadwal;
+use App\Models\User;
 use Database\Seeders\JadwalSeeder;
 use Database\Seeders\JurusanSeeder;
+use Database\Seeders\UserSearchSeeder;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -14,7 +17,7 @@ class JadwalControllerTest extends TestCase
     public function testCreateSuccess(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->patch("/api/jadwal/123", [
+        $this->put("/api/jadwal/123", [
             "senin_1" => "android",
             "senin_2" => "android",
             "selasa_1" => "sp",
@@ -41,12 +44,23 @@ class JadwalControllerTest extends TestCase
                     "jumat_2" => "edpl"
                 ]
             ]);
+
+        $user = User::query()->where("id", "=", "123")->first();
+        self::assertNotNull($user);
+
+        $jadwal = $user->jadwal;
+        self::assertNotNull($jadwal);
+        self::assertEquals("android", $jadwal->senin_1);
+        self::assertEquals("android", $jadwal->senin_2);
+        self::assertEquals("sp", $jadwal->selasa_1);
+        self::assertEquals("ks", $jadwal->selasa_2);
+        self::assertEquals("edpl", $jadwal->jumat_2);
     }
 
     public function testCreateNotFound(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->patch("/api/jadwal/1234", [
+        $this->put("/api/jadwal/1234", [
             "senin_1" => "android"
         ], ["API-Key" => "dba"])->assertStatus(404)
             ->assertJson([
@@ -56,6 +70,11 @@ class JadwalControllerTest extends TestCase
                     ],
                 ]
             ]);
+
+//        $user = User::query()->where("id", "=", "123")->first();
+//        self::assertNotNull($user);
+//        $jadwal = $user->jadwal;
+//        self::assertNull($jadwal);
     }
 
     public function testGetSuccess(): void {
@@ -92,6 +111,92 @@ class JadwalControllerTest extends TestCase
                     ]
                 ]
             ]);
+    }
+
+    public function testCreateSelectedSuccess(): void {
+        $this->seed([JurusanSeeder::class, UserSearchSeeder::class]);
+
+        $this->put("/api/jadwal",[
+            "id" => ["1","2","3"],
+            "jadwal" => [
+                "senin_1" => "android",
+                "senin_2" => "android",
+            ]
+        ], ["API-Key" => "dba"])
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    "id" => ["1","2","3"],
+                    "jadwal" => [
+                        "senin_1" => "android",
+                        "senin_2" => "android",
+                    ]
+                ]
+            ]);
+
+        $jadwal = Jadwal::query()->find("1");
+        self::assertEquals("android", $jadwal->senin_1);
+        self::assertEquals("android", $jadwal->senin_2);
+        self::assertNull($jadwal->selasa_1);
+        self::assertNull($jadwal->selasa_2);
+        self::assertNull($jadwal->rabu_1);
+        self::assertNull($jadwal->kamis_1);
+        self::assertNull($jadwal->jumat_1);
+
+        $jadwal = Jadwal::query()->find("2");
+        self::assertEquals("android", $jadwal->senin_1);
+        self::assertEquals("android", $jadwal->senin_2);
+        self::assertNull($jadwal->selasa_1);
+        self::assertNull($jadwal->selasa_2);
+        self::assertNull($jadwal->rabu_1);
+        self::assertNull($jadwal->kamis_1);
+        self::assertNull($jadwal->jumat_1);
+    }
+
+    public function testCreateSelectedValidationError(): void {
+        $this->seed([JurusanSeeder::class, UserSearchSeeder::class]);
+
+        $this->put("/api/jadwal",[
+            "id" => [],
+            "jadwal" => [
+                "senin_1" => "android",
+                "senin_2" => "android",
+            ]
+        ], ["API-Key" => "dba"])
+            ->assertStatus(400)
+            ->assertJson([
+                "errors" => [
+                    "id" => [
+                        "The id field is required."
+                    ]
+                ]
+            ]);
+    }
+
+    public function testCreateSelectedNotFound(): void {
+        $this->seed([JurusanSeeder::class, UserSearchSeeder::class]);
+
+        $this->put("/api/jadwal",[
+            "id" => ["1","2","80","90","321"],
+            "jadwal" => [
+                "senin_1" => "android",
+                "senin_2" => "android",
+            ]
+        ], ["API-Key" => "dba"])
+            ->assertStatus(404)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "Not Found" => ["80","90","321"]
+                    ]
+                ]
+            ]);
+        $jadwal = Jadwal::query()->find("1");
+        self::assertNull($jadwal);
+        $jadwal = Jadwal::query()->find("2");
+        self::assertNull($jadwal);
+        $jadwal = Jadwal::query()->find("80");
+        self::assertNull($jadwal);
     }
 
 

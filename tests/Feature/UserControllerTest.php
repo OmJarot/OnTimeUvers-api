@@ -11,6 +11,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
+use function PHPUnit\Framework\assertNotNull;
 
 class UserControllerTest extends TestCase
 {
@@ -65,7 +66,7 @@ class UserControllerTest extends TestCase
             ]);
 
         $user = User::where("id", "123")->first();
-        self::assertNotNull($user->id);
+        self::assertNotNull($user->token);
     }
 
     public function testLoginValidationError(): void {
@@ -124,7 +125,7 @@ class UserControllerTest extends TestCase
     public function testUpdateSuccess(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->put("/api/users/update",
+        $this->patch("/api/users/update",
             data: [
                 "oldPassword" => "piter",
                 "newPassword" => "update",
@@ -140,12 +141,15 @@ class UserControllerTest extends TestCase
                     "level" => "user"
                 ]
             ]);
+
+        $user = User::query()->where("token", "=", "test")->first();
+        self::assertTrue(Hash::check("update", $user->password));
     }
 
     public function testUpdateValidationError(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->put("/api/users/update",
+        $this->patch("/api/users/update",
             data: [
                 "oldPassword" => "",
                 "newPassword" => "",
@@ -171,7 +175,7 @@ class UserControllerTest extends TestCase
     public function testUpdateWrongOldPassword(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->put("/api/users/update",
+        $this->patch("/api/users/update",
             data: [
                 "oldPassword" => "salah",
                 "newPassword" => "test",
@@ -191,7 +195,7 @@ class UserControllerTest extends TestCase
     public function testUpdateWrongRetypePassword(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->put("/api/users/update",
+        $this->patch("/api/users/update",
             data: [
                 "oldPassword" => "piter",
                 "newPassword" => "test",
@@ -240,6 +244,10 @@ class UserControllerTest extends TestCase
                     "level" => "user"
                 ]
             ]);
+
+        $user = User::query()->where("id", "=", "122")->first();
+        self::assertNotNull($user);
+        self::assertEquals("new", $user->name);
     }
 
     public function testCreateUserForbidden(): void {
@@ -345,7 +353,7 @@ class UserControllerTest extends TestCase
     public function testUpdateUser(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->patch("/api/dba/users", [
+        $this->put("/api/dba/users", [
             "id" => "123",
             "name" => "new",
             "password" => "new",
@@ -361,12 +369,15 @@ class UserControllerTest extends TestCase
                 ]
             ]);
 
+        $user = User::query()->where("id", "=", "123")->first();
+        self::assertNotNull($user);
+        self::assertEquals("new", $user->name);
     }
 
     public function testUpdateUserValidationError(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->patch("/api/dba/users", [
+        $this->put("/api/dba/users", [
             "id" => "123",
             "name" => "",
             "password" => "",
@@ -391,7 +402,7 @@ class UserControllerTest extends TestCase
     public function testUpdateUserNotFound(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->patch("/api/dba/users", [
+        $this->put("/api/dba/users", [
             "id" => "12334",
             "name" => "new",
             "password" => "new",
@@ -410,7 +421,7 @@ class UserControllerTest extends TestCase
     public function testUpdateUserForbidden(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
-        $this->patch("/api/dba/users", [
+        $this->put("/api/dba/users", [
             "id" => "12334",
             "name" => "new",
             "password" => "new",
