@@ -23,8 +23,6 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    use AuthorizesRequests;
-
     public function login(LoginRequest $request): UserResource {
         $data = $request->validated();
 

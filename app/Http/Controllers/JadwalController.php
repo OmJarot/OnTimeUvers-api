@@ -17,8 +17,6 @@ use Illuminate\Support\Facades\DB;
 
 class JadwalController extends Controller
 {
-    use AuthorizesRequests;
-
     public function create(string $id, CreateJadwalRequest $request): JadwalResource {
         $this->authorize("create", Jadwal::class);
         $data = $request->validated();

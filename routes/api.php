@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\JurusanController;
+use App\Http\Controllers\KeterlambatanController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -31,4 +32,6 @@ Route::middleware('auth:token')->group(function () {
     Route::put("/jadwal/{id}", [JadwalController::class, "create"]);
     Route::get("/jadwal/{id}", [JadwalController::class, "get"]);
     Route::put("/jadwal", [JadwalController::class, "createSelected"]);
+
+    Route::post("/keterlambatan", [KeterlambatanController::class, "input"]);
 });

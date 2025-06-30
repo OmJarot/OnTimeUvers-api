@@ -10,6 +10,8 @@ use Database\Seeders\UserSearchSeeder;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class JadwalControllerTest extends TestCase
@@ -198,6 +200,4 @@ class JadwalControllerTest extends TestCase
         $jadwal = Jadwal::query()->find("80");
         self::assertNull($jadwal);
     }
-
-
 }

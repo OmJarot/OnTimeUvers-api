@@ -13,6 +13,12 @@ class Keterlambatan extends Model
     public $incrementing = true;
     public $timestamps = false;
 
+    protected $fillable = [
+        "user_id",
+        "matkul",
+        "waktu"
+    ];
+
     public function user(): BelongsTo {
         return $this->belongsTo(User::class, "user_id", "id");
     }

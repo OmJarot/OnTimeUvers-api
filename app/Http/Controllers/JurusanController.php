@@ -17,8 +17,6 @@ use Illuminate\Support\Facades\Log;
 
 class JurusanController extends Controller
 {
-    use AuthorizesRequests;
-
     public function create(CraeteJurusanRequest $request):JurusanResource {
         $this->authorize("create", User::class);
 
