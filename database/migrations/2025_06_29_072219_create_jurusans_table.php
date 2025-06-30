@@ -15,7 +15,6 @@ return new class extends Migration
             $table->string("id", 100)->nullable(false)->primary();
             $table->string("name", 100)->nullable(false);
             $table->integer("angkatan")->nullable(false);
-            $table->timestamps();
         });
     }
 
