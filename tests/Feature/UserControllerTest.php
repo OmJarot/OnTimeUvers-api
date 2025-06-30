@@ -305,6 +305,9 @@ class UserControllerTest extends TestCase
         $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
         $user = User::query()->where("id", "=", "123")->first();
+        $user->jadwal()->create([
+            "id" => $user->id
+        ]);
 
         $this->delete("/api/dba/users/".$user->id, headers: ["API-Key" => "dba"])
             ->assertStatus(200)

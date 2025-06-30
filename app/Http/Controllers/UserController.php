@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateSelectedJadwalRequest;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UpdatePasswordRequest;
@@ -126,6 +127,10 @@ class UserController extends Controller
                 ]
             ])->setStatusCode(404));
         }
+        $jadwal = $db->jadwal;
+        if ($jadwal){
+            $jadwal->delete();
+        }
         $db->delete();
         return response()->json([
             "data" => true
@@ -182,5 +187,9 @@ class UserController extends Controller
         $users = $query->paginate(perPage: $size, page: $page);
 
         return new UserCollection($users);
+    }
+
+    public function createSelected(CreateSelectedJadwalRequest $request): JsonResponse{
+
     }
 }

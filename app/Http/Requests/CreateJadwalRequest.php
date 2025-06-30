@@ -22,16 +22,16 @@ class CreateJadwalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "senin_1" => ["max:100"],
-            "senin_2" => ["max:100"],
-            "selasa_1" => ["max:100"],
-            "selasa_2" => ["max:100"],
-            "rabu_1" => ["max:100"],
-            "rabu_2" => ["max:100"],
-            "kamis_1" => ["max:100"],
-            "kamis_2" => ["max:100"],
-            "jumat_1" => ["max:100"],
-            "jumat_2" => ["max:100"],
+            "senin_1" => ["nullable", "string", "max:100"],
+            "senin_2" => ["nullable", "string", "max:100"],
+            "selasa_1" => ["nullable", "string", "max:100"],
+            "selasa_2" => ["nullable", "string", "max:100"],
+            "rabu_1" => ["nullable", "string", "max:100"],
+            "rabu_2" => ["nullable", "string", "max:100"],
+            "kamis_1" => ["nullable", "string", "max:100"],
+            "kamis_2" => ["nullable", "string", "max:100"],
+            "jumat_1" => ["nullable", "string", "max:100"],
+            "jumat_2" => ["nullable", "string", "max:100"]
         ];
     }
 }

@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateJadwalRequest;
+use App\Http\Requests\CreateSelectedJadwalRequest;
+use App\Http\Resources\JadwalCollection;
 use App\Http\Resources\JadwalResource;
 use App\Models\Jadwal;
 use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class JadwalController extends Controller
 {
@@ -47,5 +51,42 @@ class JadwalController extends Controller
         }
         $this->authorize("view", $jadwal);
         return new JadwalResource($jadwal);
+    }
+
+    public function createSelected(CreateSelectedJadwalRequest $request): JadwalCollection {
+        $data = $request->validated();
+        $this->authorize("create", Jadwal::class);
+
+        $ids = collect($data["id"]);
+        $jadwal = collect($data["jadwal"]);
+
+        DB::transaction(function () use ($ids, $jadwal){
+            $notFound = collect([]);
+
+            $ids->each(function ($value) use ($jadwal, &$notFound){
+                $user = User::query()->where("id", "=", $value)->first();
+                if (!$user){
+                    $notFound->push($value);
+                    return true;
+                }
+                $user->jadwal()->updateOrCreate(
+                    ['id' => $user->id],
+                    $jadwal->toArray()
+                );
+            });
+
+            if ($notFound->isNotEmpty()){
+                throw new HttpResponseException(response()->json([
+                    "errors" => [
+                        "message" => [
+                            "Not Found" => $notFound->toArray()
+                        ]
+                    ]
+                ])->setStatusCode(404));
+            }
+
+        });
+
+        return new JadwalCollection($data);
     }
 }

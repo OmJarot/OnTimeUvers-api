@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\JadwalSeeder;
 use Database\Seeders\JurusanSeeder;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -53,6 +54,42 @@ class JadwalControllerTest extends TestCase
                     "message" => [
                         "Not Found"
                     ],
+                ]
+            ]);
+    }
+
+    public function testGetSuccess(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, JadwalSeeder::class]);
+
+        $this->get("/api/jadwal/123", ["API-Key" => "dba"])
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    "id" => "123",
+                    "senin_1" => "android",
+                    "senin_2" => "android",
+                    "selasa_1" => "sp",
+                    "selasa_2" => "ks",
+                    "rabu_1" => "statistika",
+                    "rabu_2" => "statistika",
+                    "kamis_1" => "kp",
+                    "kamis_2" => "b.inggris 2",
+                    "jumat_1" => "edpl",
+                    "jumat_2" => "edpl"
+                ]
+            ]);
+    }
+
+    public function testGetNotFound(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $this->get("/api/jadwal/1234", ["API-Key" => "dba"])
+            ->assertStatus(404)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "Not Found"
+                    ]
                 ]
             ]);
     }

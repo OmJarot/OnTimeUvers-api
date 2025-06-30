@@ -29,4 +29,5 @@ Route::middleware('auth:token')->group(function () {
     Route::get("/jurusans", [JurusanController::class, "search"]);
 
     Route::patch("/jadwal/{id}", [JadwalController::class, "create"]);
+    Route::get("/jadwal/{id}", [JadwalController::class, "get"]);
 });
