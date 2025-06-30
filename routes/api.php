@@ -34,4 +34,5 @@ Route::middleware('auth:token')->group(function () {
     Route::put("/jadwal", [JadwalController::class, "createSelected"]);
 
     Route::post("/keterlambatan", [KeterlambatanController::class, "input"]);
+    Route::post("/keterlambatan/input", [KeterlambatanController::class, "inputById"]);
 });

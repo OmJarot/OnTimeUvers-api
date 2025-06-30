@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\InputKeterlambatanRequest;
+use App\Http\Requests\InputManualRequest;
 use App\Http\Resources\KeterlambatanResource;
 use App\Models\Keterlambatan;
 use App\Models\User;
@@ -30,6 +31,50 @@ class KeterlambatanController extends Controller
                     ]
                 ]
             ])->setStatusCode(400));
+        }
+        $matkul = optional($user->jadwal)->$sesi;
+
+        if (is_null($matkul)) {
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "Mata kuliah tidak ditemukan pada sesi {$sesi}"
+                    ]
+                ]
+            ], 404));
+        }
+
+        $keterlambatan = Keterlambatan::create([
+            "user_id" => $user->id,
+            "matkul" => $matkul,
+            "waktu" => Carbon::parse($data["waktu"])->format("Y-m-d H:i")
+        ]);
+        return new KeterlambatanResource($keterlambatan);
+    }
+
+    public function inputById(InputManualRequest $request): KeterlambatanResource {
+        $this->authorize("create", Keterlambatan::class);
+
+        $data = $request->validated();
+        $sesi = $this->getSesi($data["waktu"]);
+        if (!$sesi){
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "it's not too late "
+                    ]
+                ]
+            ])->setStatusCode(400));
+        }
+        $user = User::query()->where("id", "=", $data["id"])->first();
+        if (!$user){
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "User not found : ". $data["id"]
+                    ]
+                ]
+            ], 404));
         }
         $matkul = optional($user->jadwal)->$sesi;
 
