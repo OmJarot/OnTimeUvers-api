@@ -82,7 +82,10 @@ class UserController extends Controller
         $this->authorize("update", $user);
         $user->token = null;
         $user->save();
-        Session::invalidate();
+//        Session::invalidate();
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
         return response()->json([
             "data" => true
         ])->setStatusCode(200);
